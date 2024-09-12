@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'firebase_config.dart';
 
-void main() {
+void main() async {
+  // Cargar las variables de entorno del archivo .env
+  await dotenv.load(fileName: ".env");
+
+  // Inicializar Firebase
+  await initializeFirebase();
   runApp(const MainApp());
 }
 
