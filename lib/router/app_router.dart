@@ -83,7 +83,7 @@ final appRouter = GoRouter(
       builder: (context, state) => LoginScreen(),
     ),
     GoRoute(
-      path: '/singUp',
+      path: '/register',
       builder: (context, state) => SignUpScreen(),
     ),
     GoRoute(

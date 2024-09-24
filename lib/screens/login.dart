@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../Screens/Admin/admin_screen.dart';
-import 'client/client_screen.dart';
+import 'Client/client_screen.dart';
 import '../Screens/singUp.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -17,7 +17,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<String> _getUserRole(User user) async {
     final doc = await _firestore.collection('Users').doc(user.uid).get();
-    return doc.data()?['role'] ?? 'client'; 
+    return doc.data()?['role'] ?? 'client'; // Asume 'client' si no hay rol.
   }
 
   Future<void> resetPassword(String email) async {
@@ -311,10 +311,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             SizedBox(height: 10),
             ElevatedButton(
-              onPressed: () {
-              MaterialPageRoute(builder: (context) => SignUpScreen());
+            onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => SignUpScreen(), // Redirige a la pantalla de registro
+            ));
             },
-              child: Text('Crear Cuenta'),
+            child: Text('Crear Cuenta'),
             ),
             SizedBox(height: 10),
             ElevatedButton(

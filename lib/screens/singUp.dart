@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login.dart'
+import '../Screens/login.dart'
     as supAuth; 
 import 'package:go_router/go_router.dart';
 
@@ -31,6 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _handleSignUp(supAuth.AuthProvider authProvider) async {
+    print('Intentando registrar al usuario');
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
     final contact = _contactController.text.trim();
@@ -107,15 +108,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => _handleSignUp(authProvider),
-              child: Text('Registrar'),
+            onPressed: () => _handleSignUp(authProvider), // Aquí se maneja la creación de cuenta
+            child: Text('Crear Cuenta'),
             ),
             TextButton(
-              onPressed: () {
-                GoRouter.of(context)
-                    .go('/login'); 
-              },
-              child: Text('Regresar al Login'),
+            onPressed: () {
+            Navigator.of(context).pop(); // Vuelve a la pantalla anterior (login)
+            },
+            child: Text('Regresar al Login'),
             ),
           ],
         ),
