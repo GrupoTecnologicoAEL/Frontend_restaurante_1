@@ -33,7 +33,7 @@ class ApiService {
   }
 
     Future<void> updateProduct(Product product) async {
-    final url = Uri.parse('$apiUrl/products/${product.id}'); // Asegúrate de que esta sea la ruta correcta en tu API.
+    final url = Uri.parse('$apiUrl/${product.id}');
     final response = await http.put(
       url,
       headers: {'Content-Type': 'application/json'},

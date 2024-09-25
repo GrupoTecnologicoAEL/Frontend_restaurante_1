@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // Importar Image Picker
 import 'dart:io'; // Importar para manejar archivos locales
+import 'package:flutter/foundation.dart'; // Importar kIsWeb para Flutter web
+import 'package:image_picker_web/image_picker_web.dart'; // Solo para Web
+
 import '../../../models/product.dart';
-import '../../../models/category.dart';
+import '../../../models/category.dart' as myCategory;
 import '../../../services/API_service.dart';
 import '../../../services/Category_service.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Importar para Firebase Storage
+import 'dart:typed_data'; // Para manejar Uint8List en web
 
 class EditProductScreen extends StatefulWidget {
   final String? productId;
@@ -23,10 +28,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   final _imageUrlController = TextEditingController(); // Controlador para la URL de la imagen
-  Category? _selectedCategory; // Campo para la categoría seleccionada
+  myCategory.Category? _selectedCategory; // Campo para la categoría seleccionada
   bool _isLoading = false;
-  List<Category> _categories = []; // Lista para almacenar categorías
-  File? _pickedImage; // Para manejar la imagen seleccionada
+  List<myCategory.Category> _categories = []; // Lista para almacenar categorías
+  File? _pickedImage; // Para manejar la imagen seleccionada (solo móvil)
+  Uint8List? _webPickedImage; // Imagen seleccionada (solo web)
 
   @override
   void initState() {
@@ -45,7 +51,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   // Función para obtener las categorías desde la API o algún servicio
   void _fetchCategories() async {
     try {
-      List<Category> fetchedCategories = await ServiceCategories().getCategories();
+      List<myCategory.Category> fetchedCategories = await ServiceCategories().getCategories();
       setState(() {
         _categories = fetchedCategories;
 
@@ -60,12 +66,55 @@ class _EditProductScreenState extends State<EditProductScreen> {
     }
   }
 
-  // Función para seleccionar una nueva imagen
-  Future<void> _pickImage() async {
+  Future<String> _uploadImage(File imageFile) async {
+    try {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final ref = FirebaseStorage.instance.ref().child('product_images/$fileName.jpg');
+
+      UploadTask uploadTask = ref.putFile(imageFile);
+      TaskSnapshot snapshot = await uploadTask;
+
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (error) {
+      print('Error uploading image: $error');
+      return '';
+    }
+  }
+
+  // Subir imagen en formato Uint8List (para web) y obtener la URL
+  Future<String> _uploadImageWeb(Uint8List imageData) async {
+    try {
+      final fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      final ref = FirebaseStorage.instance.ref().child('product_images/$fileName.jpg');
+
+      UploadTask uploadTask = ref.putData(imageData, SettableMetadata(contentType: 'image/jpeg'));  // Asegúrate de que el tipo MIME sea correcto
+      TaskSnapshot snapshot = await uploadTask;
+
+      final downloadUrl = await snapshot.ref.getDownloadURL();
+      return downloadUrl;
+    } catch (error) {
+      print('Error uploading image in web: $error');
+      return '';
+    }
+  }
+
+  // Función para seleccionar una nueva imagen (móvil)
+  Future<void> _pickImageMobile() async {
     final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
         _pickedImage = File(pickedFile.path); // Guardar la imagen seleccionada
+      });
+    }
+  }
+
+  // Función para seleccionar una nueva imagen (web)
+  Future<void> _pickImageWeb() async {
+    final pickedFile = await ImagePickerWeb.getImageAsBytes();  // Usamos ImagePickerWeb para obtener bytes
+    if (pickedFile != null) {
+      setState(() {
+        _webPickedImage = pickedFile; // Guardar la imagen seleccionada en Uint8List
       });
     }
   }
@@ -77,36 +126,42 @@ class _EditProductScreenState extends State<EditProductScreen> {
       });
 
       try {
+        // Obtener datos del formulario
         String name = _nameController.text.trim();
         String description = _descriptionController.text.trim();
         double price = double.tryParse(_priceController.text.trim()) ?? 0;
         int stock = int.tryParse(_stockController.text.trim()) ?? 0;
-        String imageUrl;
+        String imageUrl = _imageUrlController.text.trim(); // Usar la imagen actual si no se cambia
 
-        if (_pickedImage != null) {
-          // Aquí agregarías el código para subir la imagen a Firebase o cualquier otro servicio y obtener la URL
-          imageUrl = 'URL_DE_LA_NUEVA_IMAGEN'; // Esta URL se actualizaría tras la subida de la imagen
-        } else {
-          // Si no se seleccionó una nueva imagen, usa la imagen existente
-          imageUrl = _imageUrlController.text.trim();
+        // Si se seleccionó una imagen en la web, subirla
+        if (kIsWeb && _webPickedImage != null) {
+          imageUrl = await _uploadImageWeb(_webPickedImage!); // Subir Uint8List a Firebase en la web
+        } 
+        // Si se seleccionó una imagen en móvil, subirla
+        else if (_pickedImage != null) {
+          imageUrl = await _uploadImage(_pickedImage!); // Subir archivo File a Firebase en móvil
         }
 
+        // Validar si se seleccionó una categoría
         if (_selectedCategory == null) {
           setState(() {
             _isLoading = false;
           });
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Por favor selecciona una categoría")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Por favor selecciona una categoría")),
+          );
           return;
         }
 
+        // Crear o actualizar el producto con los datos y la URL de la imagen
         final updatedProduct = Product(
-          id: widget.productId ?? '', // Si es nulo, usa una cadena vacía
+          id: widget.productId ?? '',
           name: name,
           description: description,
           price: price,
           stock: stock,
-          imageUrl: imageUrl, // Imagen del producto
-          category: _selectedCategory!, // Asegurarse de que la categoría está seleccionada
+          imageUrl: imageUrl, // Usar la URL de la imagen, nueva o existente
+          category: _selectedCategory!, // Categoría seleccionada
         );
 
         if (widget.productId == null) {
@@ -117,9 +172,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
           await ApiService().updateProduct(updatedProduct);
         }
 
+        // Navegar hacia atrás después de guardar
         Navigator.pop(context);
       } catch (e) {
         print('Error saving product: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al guardar el producto: $e')),
+        );
       } finally {
         setState(() {
           _isLoading = false;
@@ -146,13 +205,13 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView( // Envolver en un SingleChildScrollView para permitir desplazamiento
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Alinear a la izquierda
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
                         controller: _nameController,
@@ -196,37 +255,37 @@ class _EditProductScreenState extends State<EditProductScreen> {
                           return null;
                         },
                       ),
-                      _pickedImage == null && _imageUrlController.text.isNotEmpty
-                          ? Image.network(_imageUrlController.text) // Mostrar la imagen actual
-                          : _pickedImage != null
-                              ? Image.file(_pickedImage!) // Mostrar la imagen seleccionada
-                              : Container(),
+                      if (_webPickedImage != null)
+                        Image.memory(_webPickedImage!, height: 200) // Mostrar la imagen seleccionada en la web
+                      else if (_pickedImage != null)
+                        Image.file(_pickedImage!, height: 200) // Mostrar la imagen seleccionada en móvil
+                      else if (_imageUrlController.text.isNotEmpty)
+                        Image.network(_imageUrlController.text, height: 200), // Mostrar la imagen actual
                       ElevatedButton(
-                        onPressed: _pickImage, // Seleccionar una nueva imagen
+                        onPressed: kIsWeb ? _pickImageWeb : _pickImageMobile, // Seleccionar una nueva imagen
                         child: Text("Seleccionar Imagen"),
                       ),
-                      DropdownButtonFormField<Category>(
-  value: _categories.isNotEmpty
-      ? _categories.firstWhere(
-          (category) => category.id == _selectedCategory?.id,
-          orElse: () => _categories.first, // Devolver la primera categoría si no se encuentra la seleccionada
-        )
-      : null, // Si no hay categorías, el valor inicial será null
-  items: _categories.map((category) {
-    return DropdownMenuItem<Category>(
-      value: category,
-      child: Text(category.name),
-    );
-  }).toList(),
-  onChanged: (Category? newValue) {
-    setState(() {
-      _selectedCategory = newValue;
-    });
-  },
-  decoration: InputDecoration(labelText: 'Categoría'),
-  validator: (value) => value == null ? 'Por favor selecciona una categoría' : null,
-),
-
+                      DropdownButtonFormField<myCategory.Category>(
+                        value: _categories.isNotEmpty
+                            ? _categories.firstWhere(
+                                (category) => category.id == _selectedCategory?.id,
+                                orElse: () => _categories.first,
+                              )
+                            : null,
+                        items: _categories.map((category) {
+                          return DropdownMenuItem<myCategory.Category>(
+                            value: category,
+                            child: Text(category.name),
+                          );
+                        }).toList(),
+                        onChanged: (myCategory.Category? newValue) {
+                          setState(() {
+                            _selectedCategory = newValue;
+                          });
+                        },
+                        decoration: InputDecoration(labelText: 'Categoría'),
+                        validator: (value) => value == null ? 'Por favor selecciona una categoría' : null,
+                      ),
                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _saveProduct,
