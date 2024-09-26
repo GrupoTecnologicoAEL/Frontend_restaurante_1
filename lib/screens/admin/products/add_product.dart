@@ -210,7 +210,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       onPressed: _pickAndUploadImage,
                       child: Text('Seleccionar Imagen'),
                     ),
-
+                    SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _addProduct,
                       child: Text('Agregar Producto'),

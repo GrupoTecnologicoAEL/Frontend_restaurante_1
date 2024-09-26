@@ -72,131 +72,163 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   // Función para filtrar productos por categoría o por nombre
   void _filterProducts() {
-  setState(() {
-    filteredProducts = products.where((product) {
-      // Comparar el ID de la categoría seleccionada con el campo _id dentro del objeto category del producto
-      final matchesCategory = selectedCategory == '' || (product['category'] != null && product['category']['_id'] == selectedCategory);
-      final matchesSearchQuery = product['name'].toLowerCase().contains(searchQuery.toLowerCase());
-      return matchesCategory && matchesSearchQuery;
-    }).toList();
-  });
-}
+    setState(() {
+      filteredProducts = products.where((product) {
+        final matchesCategory = selectedCategory == '' || (product['category'] != null && product['category']['_id'] == selectedCategory);
+        final matchesSearchQuery = product['name'].toLowerCase().contains(searchQuery.toLowerCase());
+        return matchesCategory && matchesSearchQuery;
+      }).toList();
+    });
+  }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: Text('Lista de Productos'),
-      actions: [
-        IconButton(
-          icon: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddProductScreen()),
-            ).then((_) => _fetchProducts()); // Refrescar productos después de agregar uno
-          },
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Lista de Productos',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFD9A641)),
         ),
-      ],
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        children: [
-          // Filtro de categorías
-          DropdownButtonFormField<String>(
-            value: selectedCategory,
-            hint: Text("Filtrar por Categoría"),
-            onChanged: (value) {
-              setState(() {
-                selectedCategory = value;
-                _filterProducts(); // Filtrar productos cuando se selecciona una categoría
-              });
+        backgroundColor: Color(0xFF002929),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddProductScreen()),
+              ).then((_) => _fetchProducts()); // Refrescar productos después de agregar uno
             },
-            items: [
-              DropdownMenuItem<String>(
-                value: '',
-                child: Text("Todas las categorías"), // Opción para mostrar todos los productos
-              ),
-              ...categories.map((category) {
-                return DropdownMenuItem<String>(
-                  value: category.id,
-                  child: Text(category.name),
-                );
-              }).toList(),
-            ],
-          ),
-          SizedBox(height: 10),
-          // Búsqueda por nombre de producto
-          TextField(
-            decoration: InputDecoration(
-              labelText: 'Buscar por nombre',
-              border: OutlineInputBorder(),
-              suffixIcon: Icon(Icons.search),
-            ),
-            onChanged: (value) {
-              setState(() {
-                searchQuery = value;
-                _filterProducts(); // Filtrar productos cuando se busca un nombre
-              });
-            },
-          ),
-          SizedBox(height: 10),
-          // Mostrar productos
-          Expanded(
-            child: isLoading
-                ? Center(child: CircularProgressIndicator()) // Indicador de carga
-                : errorMessage != null
-                    ? Center(child: Text(errorMessage!)) // Mostrar el error si lo hay
-                    : filteredProducts.isEmpty
-                        ? Center(child: Text("No hay productos que coincidan con los filtros"))
-                        : ListView.builder(
-                            itemCount: filteredProducts.length,
-                            itemBuilder: (context, index) {
-                              final product = filteredProducts[index];
-                              return Card(
-                                margin: EdgeInsets.symmetric(vertical: 8.0),
-                                child: ListTile(
-                                  leading: Image.network(product['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
-                                  title: Text(product['name']),
-                                  subtitle: Text('Precio: \$${product['price']}'),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.edit),
-                                        onPressed: () {
-                                          // Navegar a la pantalla de edición
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => EditProductScreen(
-                                                productId: product['_id'],
-                                                productData: Product.fromJson(product),
-                                              ),
-                                            ),
-                                          ).then((_) => _fetchProducts()); // Refrescar los productos después de editar uno
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.delete),
-                                        onPressed: () {
-                                          _deleteProduct(product['_id']); // Eliminar producto
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
           ),
         ],
       ),
-    ),
-  );
-}
-
+      body: Container(
+        padding: const EdgeInsets.all(16.0),
+        color: Color(0xFF002929), // Fondo oscuro
+        child: Column(
+          children: [
+            // Filtro de categorías
+            DropdownButtonFormField<String>(
+              value: selectedCategory,
+              decoration: InputDecoration(
+                labelText: 'Filtrar por Categoría',
+                labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                filled: true,
+                fillColor: Color(0xFF004F4F),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              dropdownColor: Color(0xFF004F4F),
+              icon: Icon(Icons.arrow_drop_down, color: Color(0xFFD9A641)),
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value;
+                  _filterProducts(); // Filtrar productos cuando se selecciona una categoría
+                });
+              },
+              items: [
+                DropdownMenuItem<String>(
+                  value: '',
+                  child: Text("Todas las categorías", style: TextStyle(color: Color(0xFFD9A641))),
+                ),
+                ...categories.map((category) {
+                  return DropdownMenuItem<String>(
+                    value: category.id,
+                    child: Text(category.name, style: TextStyle(color: Color(0xFFD9A641))),
+                  );
+                }).toList(),
+              ],
+            ),
+            SizedBox(height: 10),
+            // Búsqueda por nombre de producto
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Buscar por nombre',
+                labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                filled: true,
+                fillColor: Color(0xFF004F4F),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                suffixIcon: Icon(Icons.search, color: Color(0xFFD9A641)),
+              ),
+              style: TextStyle(color: Color(0xFFD9A641)),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                  _filterProducts(); // Filtrar productos cuando se busca un nombre
+                });
+              },
+            ),
+            SizedBox(height: 10),
+            // Mostrar productos
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator(color: Color(0xFFD9A641))) // Indicador de carga
+                  : errorMessage != null
+                      ? Center(
+                          child: Text(
+                            errorMessage!,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : filteredProducts.isEmpty
+                          ? Center(
+                              child: Text(
+                                "No hay productos que coincidan con los filtros",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: filteredProducts.length,
+                              itemBuilder: (context, index) {
+                                final product = filteredProducts[index];
+                                return Card(
+                                  color: Color(0xFF004F4F),
+                                  margin: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: ListTile(
+                                    leading: Image.network(product['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
+                                    title: Text(product['name'], style: TextStyle(color: Color(0xFFD9A641))),
+                                    subtitle: Text('Precio: Q${product['price']}', style: TextStyle(color: Colors.white70)),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: Icon(Icons.edit, color: Color(0xFFD9A641)),
+                                          onPressed: () {
+                                            // Navegar a la pantalla de edición
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => EditProductScreen(
+                                                  productId: product['_id'],
+                                                  productData: Product.fromJson(product),
+                                                ),
+                                              ),
+                                            ).then((_) => _fetchProducts()); // Refrescar los productos después de editar uno
+                                          },
+                                        ),
+                                        IconButton(
+                                          icon: Icon(Icons.delete, color: Colors.red),
+                                          onPressed: () {
+                                            _deleteProduct(product['_id']); // Eliminar producto
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   // Función para eliminar un producto
   Future<void> _deleteProduct(String productId) async {

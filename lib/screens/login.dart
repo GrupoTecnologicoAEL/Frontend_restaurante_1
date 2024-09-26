@@ -273,59 +273,145 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
     final authProvider = AuthProvider();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            if (_errorMessage.isNotEmpty)
-              Text(
-                _errorMessage,
-                style: TextStyle(color: Colors.red),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.green.shade600, Colors.green.shade200],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                children: [
+                  // Logo or Title
+                  Text(
+                    'Bienvenido',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 30),
+
+                  // Email TextField
+                  if (_errorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Text(
+                        _errorMessage,
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  TextField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Correo Electrónico',
+                      labelStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.3),
+                      prefixIcon: Icon(Icons.email, color: Colors.white),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  SizedBox(height: 20),
+
+                  // Password TextField
+                  TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      labelStyle: TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.3),
+                      prefixIcon: Icon(Icons.lock, color: Colors.white),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: Colors.white),
+                    obscureText: true,
+                  ),
+                  SizedBox(height: 20),
+
+                  // Login Button
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      foregroundColor: Colors.white,
+                    ),
+                    onPressed: () => _handleSignIn(authProvider),
+                    child: Text(
+                      'Iniciar sesión',
+                      style: TextStyle(
+                        color: Colors.green.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  // Sign in with Google Button
+                  TextButton.icon(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      textStyle: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () => authProvider.signInWithGoogle(context),
+                    icon: Icon(Icons.login, color: Colors.white),
+                    label: Text('Iniciar sesión con Google'),
+                  ),
+                  SizedBox(height: 10),
+
+                  // Forgot password and Sign Up Button
+                  TextButton(
+                    onPressed: () {
+                      _showResetPasswordDialog(context);
+                    },
+                    child: Text(
+                      '¿Olvidaste tu contraseña?',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => SignUpScreen(), // Redirige a la pantalla de registro
+                      ));
+                    },
+                    child: Text(
+                      'Crear una nueva cuenta',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ],
               ),
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _handleSignIn(authProvider),
-              child: Text('Iniciar sesión'),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => authProvider.signInWithGoogle(context),
-              child: Text('Iniciar Sesión con Google'),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-            onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => SignUpScreen(), // Redirige a la pantalla de registro
-            ));
-            },
-            child: Text('Crear Cuenta'),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                _showResetPasswordDialog(context);
-              },
-              child: Text('Olvidé mi contraseña'),
-            ),
-          ],
+          ),
         ),
       ),
     );
