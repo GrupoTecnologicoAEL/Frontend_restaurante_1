@@ -23,15 +23,15 @@ class AdminHomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 24, 
             fontWeight: FontWeight.bold, 
-            color: Color(0xFFD9A641)
+            color: Color(0xFFFBBF24), // Naranja elegante
           ),
         ),
-        backgroundColor: Color(0xFF002929), // Fondo oscuro del AppBar
+        backgroundColor: Color(0xFF1C1C1E), // Fondo oscuro elegante
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.logout),
-            color: Color(0xFFD9A641), // Icono de logout con el color correspondiente
+            color: Color(0xFFFBBF24), // Icono de logout con el color correspondiente
             onPressed: () {
               _logout(context);  // Lógica para cerrar sesión
             },
@@ -40,7 +40,11 @@ class AdminHomeScreen extends StatelessWidget {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF002929), // Fondo principal oscuro
+          gradient: LinearGradient(
+            colors: [Color(0xFF1C1C1E), Color(0xFF3A3A3C)], // Degradado oscuro elegante
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -53,7 +57,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Gestión de Productos',
                 icon: Icons.shopping_bag_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   Navigator.push(
                     context,
@@ -67,7 +71,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Gestión de Categorías',
                 icon: Icons.category_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   Navigator.push(
                     context,
@@ -81,7 +85,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Usuarios',
                 icon: Icons.people_alt_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   Navigator.push(
                     context,
@@ -95,7 +99,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Reportes',
                 icon: Icons.bar_chart_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   // Lógica para la pantalla de reportes
                 },
@@ -104,7 +108,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Configuración',
                 icon: Icons.settings_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   // Lógica para la pantalla de configuración
                 },
@@ -113,7 +117,7 @@ class AdminHomeScreen extends StatelessWidget {
                 context,
                 title: 'Notificaciones',
                 icon: Icons.notifications_outlined,
-                color: Color(0xFF004F4F), // Fondo de la tarjeta
+                color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   // Lógica para la pantalla de notificaciones
                 },
@@ -133,16 +137,16 @@ class AdminHomeScreen extends StatelessWidget {
       child: Card(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 10,
-        shadowColor: Colors.black54,
+        shadowColor: Colors.orangeAccent.withOpacity(0.5),
         child: Container(
           decoration: BoxDecoration(
             color: color,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black38,
-                blurRadius: 15,
-                offset: Offset(0, 8),
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 12,
+                offset: Offset(0, 6),
               ),
             ],
           ),
@@ -151,8 +155,8 @@ class AdminHomeScreen extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 40,
-                backgroundColor: Color(0xFFD9A641).withOpacity(0.3),
-                child: Icon(icon, size: 50, color: Color(0xFFD9A641)),
+                backgroundColor: Color(0xFFFBBF24).withOpacity(0.3),
+                child: Icon(icon, size: 50, color: Color(0xFFFBBF24)),
               ),
               SizedBox(height: 20),
               Text(
@@ -161,7 +165,7 @@ class AdminHomeScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFD9A641),
+                  color: Color(0xFFFBBF24),
                 ),
               ),
             ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert'; 
-import './edit_product.dart'; 
-import './add_product.dart'; 
+import 'dart:convert';
+import './edit_product.dart';
+import './add_product.dart';
 import '../../../models/product.dart'; // Importa tu clase Product y Category
 import '../../../models/category.dart'; // Importa tu clase Category
 
@@ -32,7 +32,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     try {
       final response = await http.get(Uri.parse('http://localhost:5002/api/products'));
       if (response.statusCode == 200) {
-        // Decodificar la respuesta JSON
         final List<dynamic> productData = json.decode(response.body);
         setState(() {
           products = productData.cast<Map<String, dynamic>>();
@@ -89,22 +88,29 @@ class _ProductListScreenState extends State<ProductListScreen> {
           'Lista de Productos',
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFFD9A641)),
         ),
-        backgroundColor: Color(0xFF002929),
+        backgroundColor: Color(0xFF4A4A4A), // Fondo oscuro del AppBar
         actions: [
           IconButton(
             icon: Icon(Icons.add),
+            color: Color(0xFFD9A641), // Icono de agregar producto con el color dorado
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => AddProductScreen()),
-              ).then((_) => _fetchProducts()); // Refrescar productos después de agregar uno
+              ).then((_) => _fetchProducts());
             },
           ),
         ],
       ),
       body: Container(
         padding: const EdgeInsets.all(16.0),
-        color: Color(0xFF002929), // Fondo oscuro
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF1C1C1E), Color(0xFF3A3A3C)], // Degradado oscuro elegante
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ), // Fondo oscuro de la pantalla
         child: Column(
           children: [
             // Filtro de categorías
@@ -114,13 +120,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 labelText: 'Filtrar por Categoría',
                 labelStyle: TextStyle(color: Color(0xFFD9A641)),
                 filled: true,
-                fillColor: Color(0xFF004F4F),
+                fillColor: Color.fromARGB(255, 51, 51, 51), // Color de fondo del Dropdown
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
               ),
-              dropdownColor: Color(0xFF004F4F),
+              dropdownColor: Color.fromARGB(255, 51, 51, 51), // Color del dropdown desplegado
               icon: Icon(Icons.arrow_drop_down, color: Color(0xFFD9A641)),
               onChanged: (value) {
                 setState(() {
@@ -148,7 +154,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 labelText: 'Buscar por nombre',
                 labelStyle: TextStyle(color: Color(0xFFD9A641)),
                 filled: true,
-                fillColor: Color(0xFF004F4F),
+                fillColor: Color.fromARGB(255, 51, 51, 51), // Fondo del TextField
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -167,27 +173,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
             // Mostrar productos
             Expanded(
               child: isLoading
-                  ? Center(child: CircularProgressIndicator(color: Color(0xFFD9A641))) // Indicador de carga
+                  ? Center(child: CircularProgressIndicator(color: Color(0xFFD9A641)))
                   : errorMessage != null
-                      ? Center(
-                          child: Text(
-                            errorMessage!,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        )
+                      ? Center(child: Text(errorMessage!, style: TextStyle(color: Colors.white)))
                       : filteredProducts.isEmpty
-                          ? Center(
-                              child: Text(
-                                "No hay productos que coincidan con los filtros",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            )
+                          ? Center(child: Text("No hay productos que coincidan con los filtros", style: TextStyle(color: Colors.white)))
                           : ListView.builder(
                               itemCount: filteredProducts.length,
                               itemBuilder: (context, index) {
                                 final product = filteredProducts[index];
                                 return Card(
-                                  color: Color(0xFF004F4F),
+                                  color: Color(0xFF4A4A4A), // Fondo de las tarjetas
                                   margin: EdgeInsets.symmetric(vertical: 8.0),
                                   child: ListTile(
                                     leading: Image.network(product['imageUrl'], width: 50, height: 50, fit: BoxFit.cover),
@@ -199,7 +195,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                         IconButton(
                                           icon: Icon(Icons.edit, color: Color(0xFFD9A641)),
                                           onPressed: () {
-                                            // Navegar a la pantalla de edición
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -208,13 +203,13 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                                   productData: Product.fromJson(product),
                                                 ),
                                               ),
-                                            ).then((_) => _fetchProducts()); // Refrescar los productos después de editar uno
+                                            ).then((_) => _fetchProducts());
                                           },
                                         ),
                                         IconButton(
                                           icon: Icon(Icons.delete, color: Colors.red),
                                           onPressed: () {
-                                            _deleteProduct(product['_id']); // Eliminar producto
+                                            _deleteProduct(product['_id']);
                                           },
                                         ),
                                       ],
@@ -235,7 +230,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     try {
       final response = await http.delete(Uri.parse('http://localhost:5002/api/products/$productId'));
       if (response.statusCode == 200) {
-        // Producto eliminado con éxito, volver a cargar los productos
         _fetchProducts();
       } else {
         print('Error al eliminar producto: ${response.statusCode}');

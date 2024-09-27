@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:dio/dio.dart';
@@ -32,7 +32,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     _fetchCategories();
   }
 
-  // Obtener todas las categorías del backend
   Future<void> _fetchCategories() async {
     try {
       final response = await _dio.get('http://localhost:5002/api/categories');
@@ -45,10 +44,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // Función para seleccionar y subir imagen desde la galería
   Future<void> _pickAndUploadImage() async {
     if (kIsWeb) {
-      // Seleccionar imagen desde web
       final pickedFile = await ImagePickerWeb.getImageAsBytes();
       if (pickedFile != null) {
         setState(() {
@@ -57,7 +54,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
         await _uploadImageToFirebase(pickedFile, isWeb: true);
       }
     } else {
-      // Seleccionar imagen desde móvil o escritorio
       final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
         setState(() {
@@ -68,7 +64,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // Subir imagen a Firebase y obtener la URL
   Future<void> _uploadImageToFirebase(dynamic imageFile, {bool isWeb = false}) async {
     try {
       final fileName = DateTime.now().millisecondsSinceEpoch.toString();
@@ -91,7 +86,6 @@ class _AddProductScreenState extends State<AddProductScreen> {
     }
   }
 
-  // Función para agregar un producto
   Future<void> _addProduct() async {
     if (_uploadedImageUrl == null) {
       await _pickAndUploadImage(); // Subir imagen si no se ha subido
@@ -120,6 +114,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       );
     }
   }
+
   void _clearFields() {
     setState(() {
       _nameController.clear();
@@ -132,18 +127,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
     });
   }
 
-  // Mostrar vista previa de la imagen o un mensaje si no se ha seleccionado ninguna imagen
   Widget _buildImagePreview() {
     if (_isLoading) {
       return CircularProgressIndicator();
     } else if (_pickedImage != null && kIsWeb) {
-      // Vista previa de imagen para web
       return Image.memory(_pickedImage, height: 150);
     } else if (_pickedImage != null && !kIsWeb) {
-      // Vista previa de imagen para móvil/desktop
       return Image.file(_pickedImage, height: 150);
     } else if (_uploadedImageUrl != null) {
-      // Mostrar imagen de la URL subida si existe
       return Image.network(_uploadedImageUrl!, height: 150);
     } else {
       return Text('No se ha seleccionado ninguna imagen');
@@ -154,46 +145,103 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agregar Producto'),
+        title: Text(
+          'Agregar Producto',
+          style: TextStyle(color: Color(0xFFD9A641)),
+        ),
+        backgroundColor: Color(0xFF4A4A4A),
       ),
-      body: Padding(
+      body: Container(
+        width: double.infinity,
+        height: MediaQuery.of(context).size.height, // Asegura que el fondo cubra toda la pantalla
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF1C1C1E), Color(0xFF3A3A3C)],
+          ),
+        ),
         padding: const EdgeInsets.all(16.0),
         child: _isLoading
-            ? Center(child: CircularProgressIndicator())
+            ? Center(child: CircularProgressIndicator(color: Color(0xFFD9A641)))
             : SingleChildScrollView(
                 child: Column(
                   children: [
                     TextField(
                       controller: _nameController,
-                      decoration: InputDecoration(labelText: 'Nombre del Producto'),
+                      decoration: InputDecoration(
+                        labelText: 'Nombre del Producto',
+                        labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                        filled: true,
+                        fillColor: Color(0xFF4A4A4A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: TextStyle(color: Color(0xFFD9A641)),
                     ),
                     SizedBox(height: 16),
                     TextField(
                       controller: _priceController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(labelText: 'Precio'),
+                      decoration: InputDecoration(
+                        labelText: 'Precio',
+                        labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                        filled: true,
+                        fillColor: Color(0xFF4A4A4A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: TextStyle(color: Color(0xFFD9A641)),
                     ),
                     SizedBox(height: 16),
                     TextField(
                       controller: _descriptionController,
-                      decoration: InputDecoration(labelText: 'Descripción'),
+                      decoration: InputDecoration(
+                        labelText: 'Descripción',
+                        labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                        filled: true,
+                        fillColor: Color(0xFF4A4A4A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: TextStyle(color: Color(0xFFD9A641)),
                     ),
                     SizedBox(height: 16),
                     TextField(
                       controller: _stockController,
                       keyboardType: TextInputType.number,
-                      decoration: InputDecoration(labelText: 'Stock'),
+                      decoration: InputDecoration(
+                        labelText: 'Stock',
+                        labelStyle: TextStyle(color: Color(0xFFD9A641)),
+                        filled: true,
+                        fillColor: Color(0xFF4A4A4A),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      style: TextStyle(color: Color(0xFFD9A641)),
                     ),
                     SizedBox(height: 16),
-
-                    // Dropdown para seleccionar la categoría
                     DropdownButton<String>(
                       value: _selectedCategory,
-                      hint: Text('Seleccionar Categoría'),
+                      hint: Text(
+                        'Seleccionar Categoría',
+                        style: TextStyle(color: Color(0xFFD9A641)),
+                      ),
                       items: _categories.map<DropdownMenuItem<String>>((category) {
                         return DropdownMenuItem<String>(
                           value: category['_id'],
-                          child: Text(category['name']),
+                          child: Text(
+                            category['name'],
+                            style: TextStyle(color: Color(0xFFD9A641)),
+                          ),
                         );
                       }).toList(),
                       onChanged: (value) {
@@ -201,19 +249,39 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           _selectedCategory = value;
                         });
                       },
+                      dropdownColor: Color(0xFF4A4A4A),
                     ),
                     SizedBox(height: 16),
-
-                    // Mostrar vista previa de la imagen subida
                     _buildImagePreview(),
+                    SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _pickAndUploadImage,
-                      child: Text('Seleccionar Imagen'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFD9A641),
+                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Seleccionar Imagen',
+                        style: TextStyle(color: Color(0xFF4A4A4A)),
+                      ),
                     ),
                     SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: _addProduct,
-                      child: Text('Agregar Producto'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFFD9A641),
+                        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        'Agregar Producto',
+                        style: TextStyle(color: Color(0xFF4A4A4A)),
+                      ),
                     ),
                   ],
                 ),

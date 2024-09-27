@@ -14,19 +14,31 @@ class ClientHomeScreen extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.orangeAccent, // Cambiado al color naranja
           ),
         ),
-        backgroundColor: Colors.green.shade600,
+        backgroundColor: Colors.black, // Fondo negro para la elegancia
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              final authProvider = supAuth.AuthProvider();
-              await authProvider.signOut();
-              GoRouter.of(context).go('/login');
+        // Personalizamos el ícono del Drawer
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.orangeAccent, size: 30), // Cambiamos el color a naranja y aumentamos el tamaño
+            onPressed: () {
+              Scaffold.of(context).openDrawer(); // Abre el drawer
             },
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: IconButton(
+              icon: Icon(Icons.logout, color: Colors.orangeAccent, size: 26), // Aumentado el tamaño del ícono
+              onPressed: () async {
+                final authProvider = supAuth.AuthProvider();
+                await authProvider.signOut();
+                GoRouter.of(context).go('/login');
+              },
+            ),
           ),
         ],
       ),
@@ -34,7 +46,7 @@ class ClientHomeScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader(),
+          _buildHeader(), // Encabezado con los nuevos colores
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -100,7 +112,7 @@ class ClientHomeScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: Colors.green.shade600,
+        color: Colors.black, // Cambiado el fondo a negro
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(30),
           bottomRight: Radius.circular(30),
@@ -114,7 +126,7 @@ class ClientHomeScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.orangeAccent, // Cambiado el color a naranja
             ),
           ),
           SizedBox(height: 10),
@@ -122,7 +134,7 @@ class ClientHomeScreen extends StatelessWidget {
             'Explora nuestras categorías y ofertas',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.white70,
+              color: Colors.orangeAccent.withOpacity(0.7),
             ),
           ),
           SizedBox(height: 20),
@@ -137,11 +149,11 @@ class ClientHomeScreen extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.black,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
+              color: Colors.orangeAccent.withOpacity(0.5),
               blurRadius: 8,
               offset: Offset(0, 4),
             ),
@@ -153,10 +165,10 @@ class ClientHomeScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
+                color: Colors.orange.withOpacity(0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 48, color: Colors.green.shade600),
+              child: Icon(icon, size: 48, color: Colors.orangeAccent),
             ),
             SizedBox(height: 12),
             Text(
@@ -164,7 +176,7 @@ class ClientHomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.green.shade600,
+                color: Colors.orangeAccent,
               ),
             ),
           ],

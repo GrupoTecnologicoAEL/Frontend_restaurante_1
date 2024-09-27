@@ -101,10 +101,11 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             color: Color(0xFFD9A641),
           ),
         ),
-        backgroundColor: Color(0xFF002929),
+        backgroundColor: Color(0xFF4A4A4A),
         actions: [
           IconButton(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.add), 
+            color: Color(0xFFD9A641),                                                                   
             onPressed: () {
               Navigator.push(
                 context,
@@ -116,7 +117,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF002929), // Fondo principal oscuro
+          color: Color(0xFF1C1C1E), // Fondo principal oscuro
         ),
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -127,7 +128,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
               style: TextStyle(color: Color(0xFFD9A641)),
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Color(0xFF004F4F),
+                fillColor: Color.fromARGB(255, 51, 51, 51),
                 labelText: 'Buscar por nombre',
                 labelStyle: TextStyle(color: Color(0xFFD9A641)),
                 prefixIcon: Icon(Icons.search, color: Color(0xFFD9A641)),
@@ -161,7 +162,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                               itemBuilder: (context, index) {
                                 final category = filteredCategories[index];
                                 return Card(
-                                  color: Color(0xFF004F4F), // Fondo de la tarjeta
+                                  color: Color(0xFF4A4A4A), // Fondo de la tarjeta
                                   child: ListTile(
                                     title: Text(
                                       category.name,

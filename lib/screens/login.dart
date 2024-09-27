@@ -25,8 +25,7 @@ class AuthProvider extends ChangeNotifier {
       await _auth.sendPasswordResetEmail(email: email);
       print("Correo de restablecimiento de contraseña enviado a $email");
     } catch (error) {
-      print(
-          "Error al enviar el correo de restablecimiento de contraseña: $error");
+      print("Error al enviar el correo de restablecimiento de contraseña: $error");
       throw error;
     }
   }
@@ -34,8 +33,7 @@ class AuthProvider extends ChangeNotifier {
   // Función para iniciar sesión con Google
   Future<void> signInWithGoogle(BuildContext context) async {
     try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
+      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
@@ -43,11 +41,9 @@ class AuthProvider extends ChangeNotifier {
           idToken: googleSignInAuthentication.idToken,
           accessToken: googleSignInAuthentication.accessToken,
         );
-        final UserCredential authResult =
-            await _auth.signInWithCredential(credential);
+        final UserCredential authResult = await _auth.signInWithCredential(credential);
         final User? user = authResult.user;
-        final AdditionalUserInfo? additionalUserInfo =
-            authResult.additionalUserInfo;
+        final AdditionalUserInfo? additionalUserInfo = authResult.additionalUserInfo;
 
         if (user != null) {
           final role = await _getUserRole(user);
@@ -64,7 +60,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> signUp({
     required BuildContext context,
     required String name,
@@ -74,8 +69,7 @@ class AuthProvider extends ChangeNotifier {
     required String password,
   }) async {
     try {
-      final UserCredential credential =
-          await _auth.createUserWithEmailAndPassword(
+      final UserCredential credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -88,7 +82,7 @@ class AuthProvider extends ChangeNotifier {
           'address': address,
           'contact': contact,
           'email': email,
-          'role': 'client', //Rol por defecto 
+          'role': 'client', //Rol por defecto
         });
 
         context.go('/client'); // Redirigir al usuario a la pantalla del cliente
@@ -96,7 +90,7 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (error) {
       print("Error en el registro: $error");
-      throw error; 
+      throw error;
     }
   }
 
@@ -143,46 +137,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 }
-
-// Implementación de GoRouter con la lógica de redirección según el rol
-
-final appRouter = GoRouter(
-  initialLocation: '/login',
-  redirect: (BuildContext context, GoRouterState state) async {
-    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
-
-    if (isLoggedIn) {
-      final user = FirebaseAuth.instance.currentUser!;
-      final role = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user.uid)
-          .get()
-          .then((doc) => doc.data()?['role'] ?? 'client');
-
-      if (state.uri.toString() == '/login') {
-        return role == 'admin' ? '/admin' : '/client';
-      }
-    } else if (state.uri.toString() != '/login') {
-      return '/login';
-    }
-
-    return null;
-  },
-  routes: [
-    GoRoute(
-      path: '/login',
-      builder: (context, state) => LoginScreen(),
-    ),
-    GoRoute(
-      path: '/admin',
-      builder: (context, state) => AdminHomeScreen(),
-    ),
-    GoRoute(
-      path: '/client',
-      builder: (context, state) => ClientHomeScreen(),
-    ),
-  ],
-);
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -273,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-   @override
+  @override
   Widget build(BuildContext context) {
     final authProvider = AuthProvider();
 
@@ -283,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
         height: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.green.shade600, Colors.green.shade200],
+            colors: [Colors.black, Colors.grey.shade800],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -300,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       fontSize: 32.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.orangeAccent,
                     ),
                   ),
                   SizedBox(height: 30),
@@ -320,8 +274,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Correo Electrónico',
                       labelStyle: TextStyle(color: Colors.white),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.3),
-                      prefixIcon: Icon(Icons.email, color: Colors.white),
+                      fillColor: Colors.white.withOpacity(0.2),
+                      prefixIcon: Icon(Icons.email, color: Colors.orangeAccent),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -339,8 +293,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       labelText: 'Contraseña',
                       labelStyle: TextStyle(color: Colors.white),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.3),
-                      prefixIcon: Icon(Icons.lock, color: Colors.white),
+                      fillColor: Colors.white.withOpacity(0.2),
+                      prefixIcon: Icon(Icons.lock, color: Colors.orangeAccent),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
@@ -354,6 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Login Button
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
                       padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -364,7 +319,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Iniciar sesión',
                       style: TextStyle(
-                        color: Colors.green.shade600,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),
@@ -372,20 +326,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 20),
 
-                  // Sign in with Google Button
+                  // Sign in with Google Button (resaltado)
                   TextButton.icon(
                     style: TextButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      textStyle: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
                     onPressed: () => authProvider.signInWithGoogle(context),
-                    icon: Icon(Icons.login, color: Colors.white),
-                    label: Text('Iniciar sesión con Google'),
+                    icon: Icon(Icons.login, color: Colors.orangeAccent),
+                    label: Text(
+                      'Iniciar sesión con Google',
+                      style: TextStyle(
+                        color: Colors.orangeAccent,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 20),
 
                   // Forgot password and Sign Up Button
                   TextButton(
