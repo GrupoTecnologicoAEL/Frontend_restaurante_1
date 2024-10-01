@@ -3,6 +3,7 @@ import '../Client/products/product_list_screen.dart';
 import '../login.dart' as supAuth;
 import 'package:go_router/go_router.dart';
 import '../Client/drawer.dart';
+import '../Client/products/cart_screen.dart';
 
 class ClientHomeScreen extends StatelessWidget {
   @override
@@ -76,7 +77,10 @@ class ClientHomeScreen extends StatelessWidget {
                         icon: Icons.shopping_cart,
                         label: 'Mi Carrito',
                         onTap: () {
-                          // Implementar lógica para ir al carrito
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>CartScreen()),
+                          );
                         },
                       ),
                       _buildGridItem(
