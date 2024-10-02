@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart'; // Importar FirebaseAuth
 import '../../../models/cart.dart';
 import '../../../services/Cart_service.dart';
 import '../products/order_screen.dart'; // Importar la pantalla de información para hacer la orden
+import '../../../models/order.dart'; // Reemplaza el path correcto
+
 
 class CartScreen extends StatefulWidget {
   @override
@@ -90,13 +92,20 @@ class _CartScreenState extends State<CartScreen> {
 
   // Navegar a la pantalla de información para hacer la orden
   void _goToOrderInformation() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => OrderInformationScreen(totalPrice: _calculateTotalPrice()),
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => OrderConfirmationScreen(
+        totalPrice: _calculateTotalPrice(),
+        items: cart!.products.map((product) => OrderItem(
+          productId: product.productId,
+          quantity: product.quantity
+        )).toList(), // Convertir los productos del carrito en OrderItem
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   // Calcular el total del carrito
   double _calculateTotalPrice() {
