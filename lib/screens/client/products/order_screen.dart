@@ -38,10 +38,13 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
             notes: _notes,
           );
 
+          // Navegar a la pantalla de inicio
+          Navigator.of(context).popUntil((route) => route.isFirst);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Order placed successfully!',
+                '¡Pedido realizado con éxito!',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.green,
@@ -51,7 +54,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Failed to place order: $error',
+                'Error al realizar el pedido: $error',
                 style: TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.red,
@@ -67,7 +70,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Confirm Order',
+          'Confirmar Pedido',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -87,7 +90,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Enter your details:',
+                  'Introduce tus detalles:',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
@@ -96,42 +99,42 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'Full Name',
+                  label: 'Nombre Completo',
                   icon: Icons.person,
                   onSaved: (value) => _name = value,
                   validator: (value) =>
-                      value!.isEmpty ? 'Please enter your name' : null,
+                      value!.isEmpty ? 'Por favor ingresa tu nombre' : null,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'Address',
+                  label: 'Dirección',
                   icon: Icons.location_on,
                   onSaved: (value) => _address = value,
                   validator: (value) =>
-                      value!.isEmpty ? 'Please enter your address' : null,
+                      value!.isEmpty ? 'Por favor ingresa tu dirección' : null,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'Phone Number',
+                  label: 'Número de Teléfono',
                   icon: Icons.phone,
                   onSaved: (value) => _phone = value,
                   validator: (value) =>
-                      value!.isEmpty ? 'Please enter your phone number' : null,
+                      value!.isEmpty ? 'Por favor ingresa tu número de teléfono' : null,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'Email',
+                  label: 'Correo Electrónico',
                   icon: Icons.email,
                   onSaved: (value) => _email = value,
                   validator: (value) =>
-                      value!.isEmpty ? 'Please enter your email' : null,
+                      value!.isEmpty ? 'Por favor ingresa tu correo electrónico' : null,
                 ),
                 SizedBox(height: 20),
                 _buildTextField(
-                  label: 'Notes (Optional)',
+                  label: 'Notas (Opcional)',
                   icon: Icons.note,
                   onSaved: (value) => _notes = value,
-                  validator: (value) => null, // No validation needed
+                  validator: (value) => null, // No es necesario validar
                 ),
                 SizedBox(height: 30),
                 Center(
@@ -148,7 +151,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
                       ),
                     ),
                     child: Text(
-                      'Confirm Order',
+                      'Confirmar Pedido',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
