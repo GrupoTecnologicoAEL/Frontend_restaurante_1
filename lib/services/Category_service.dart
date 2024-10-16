@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../models/category.dart';
 
 class ServiceCategories {
-  final String baseUrl = 'http://localhost:5002/api/categories'; // Ajusta tu URL base
+  final String baseUrl = 'https://backend-restaurante-1.onrender.com/api/categories'; // Ajusta tu URL base
 
   // Método para obtener las categorías
   Future<List<Category>> getCategories() async {

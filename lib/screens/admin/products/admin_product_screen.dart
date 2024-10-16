@@ -30,7 +30,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   // Función para obtener productos desde la API
   Future<void> _fetchProducts() async {
     try {
-      final response = await http.get(Uri.parse('http://localhost:5002/api/products'));
+      final response = await http.get(Uri.parse('https://backend-restaurante-1.onrender.com/api/products'));
       if (response.statusCode == 200) {
         final List<dynamic> productData = json.decode(response.body);
         setState(() {

@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class OrderService {
-  final String baseUrl = 'http://localhost:5002/api/order';
+  final String baseUrl = 'https://backend-restaurante-1.onrender.com/api/order';
 
    // Obtener todas las órdenes
   Future<List<Map<String, dynamic>>> getOrders() async {

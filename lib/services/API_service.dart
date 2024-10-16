@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/product.dart';
 
 class ApiService {
-  final String apiUrl = 'http://localhost:5002/api/products';
+  final String apiUrl = 'https://backend-restaurante-1.onrender.com/api/products';
 
   Future<List<Product>> getProduct() async {
     final response = await http.get(Uri.parse(apiUrl));

@@ -4,7 +4,7 @@ import '../models/cart.dart'; // Asegúrate de tener un modelo de carrito
 
 
 class ServiceCart {
-  final String baseUrl = 'http://localhost:5002/api/cart';
+  final String baseUrl = 'https://backend-restaurante-1.onrender.com/api/cart';
 
   // Obtener el carrito por el ID del usuario
   Future<Cart> getCartProducts(String userId) async {
@@ -23,7 +23,7 @@ class ServiceCart {
 
   // Agregar un producto al carrito
   Future<void> addToCart(String userId, String productId, int quantity) async {
-    final url = Uri.parse('http://localhost:5002/api/cart/add');
+    final url = Uri.parse('https://backend-restaurante-1.onrender.com/api/cart/add');
   final body = jsonEncode({
     'userId': userId,
     'productId': productId,
