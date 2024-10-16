@@ -3,8 +3,13 @@ import '../Client/products/product_list_screen.dart';
 import '../login.dart' as supAuth;
 import 'package:go_router/go_router.dart';
 import '../Client/drawer.dart';
+import '../Client/products/cart_screen.dart';
+import '../Client/products/status_order.dart';
+import 'package:firebase_auth/firebase_auth.dart'; 
 
 class ClientHomeScreen extends StatelessWidget {
+  final userId = FirebaseAuth.instance.currentUser?.uid;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +24,6 @@ class ClientHomeScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.black, // Fondo negro para la elegancia
         elevation: 0,
-        // Personalizamos el ícono del Drawer
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.menu, color: Colors.orangeAccent, size: 30), // Cambiamos el color a naranja y aumentamos el tamaño
@@ -76,7 +80,10 @@ class ClientHomeScreen extends StatelessWidget {
                         icon: Icons.shopping_cart,
                         label: 'Mi Carrito',
                         onTap: () {
-                          // Implementar lógica para ir al carrito
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => CartScreen()),
+                          );
                         },
                       ),
                       _buildGridItem(
@@ -84,7 +91,19 @@ class ClientHomeScreen extends StatelessWidget {
                         icon: Icons.receipt_long,
                         label: 'Mis Pedidos',
                         onTap: () {
-                          // Implementar lógica para ir a pedidos
+                          if (userId != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CustomerOrderListScreen(userId: userId!),
+                              ),
+                            );
+                          } else {
+                            // Manejo de error si no se puede obtener el userId
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error al obtener el ID del usuario')),
+                            );
+                          }
                         },
                       ),
                       _buildGridItem(

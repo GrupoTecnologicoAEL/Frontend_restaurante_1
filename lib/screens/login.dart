@@ -16,9 +16,21 @@ class AuthProvider extends ChangeNotifier {
   User? get currentUser => _auth.currentUser;
 
   Future<String> _getUserRole(User user) async {
-    final doc = await _firestore.collection('Users').doc(user.uid).get();
-    return doc.data()?['role'] ?? 'client'; // Asume 'client' si no hay rol.
+  final doc = await _firestore.collection('Users').doc(user.uid).get();
+
+  if (doc.exists) {
+    // Si el documento existe, retorna el rol o 'client' si no está definido
+    return doc.data()?['role'] ?? 'client';
+  } else {
+    // Si el documento no existe, lo creamos con el rol por defecto
+    await _firestore.collection('Users').doc(user.uid).set({
+      'name': user.displayName ?? 'Usuario de Google',
+      'email': user.email,
+      'role': 'client', // Rol por defecto
+    });
+    return 'client'; // Retorna 'client' después de crear el documento
   }
+}
 
   Future<void> resetPassword(String email) async {
     try {
@@ -32,33 +44,40 @@ class AuthProvider extends ChangeNotifier {
 
   // Función para iniciar sesión con Google
   Future<void> signInWithGoogle(BuildContext context) async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
-        final UserCredential authResult = await _auth.signInWithCredential(credential);
-        final User? user = authResult.user;
-        final AdditionalUserInfo? additionalUserInfo = authResult.additionalUserInfo;
+  try {
+    final GoogleSignInAccount? googleSignInAccount = await googleSignIn.signIn();
+    if (googleSignInAccount != null) {
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        idToken: googleSignInAuthentication.idToken,
+        accessToken: googleSignInAuthentication.accessToken,
+      );
+      final UserCredential authResult = await _auth.signInWithCredential(credential);
+      final User? user = authResult.user;
+      final AdditionalUserInfo? additionalUserInfo = authResult.additionalUserInfo;
 
-        if (user != null) {
+      if (user != null) {
+        // Comprobar si es un nuevo usuario
+        if (additionalUserInfo?.isNewUser == true) {
+          // Guardar datos en Firestore
+          await _firestore.collection('Users').doc(user.uid).set({
+            'name': user.displayName ?? 'Usuario de Google',
+            'email': user.email,
+            'role': 'client', // Rol por defecto
+          });
+          context.go('/client'); // Redirigir a la pantalla de cliente si es nuevo
+        } else {
           final role = await _getUserRole(user);
-          if (additionalUserInfo?.isNewUser == true) {
-            context.go('/client');
-          } else {
-            context.go(role == 'admin' ? '/admin' : '/client');
-          }
-          notifyListeners();
+          context.go(role == 'admin' ? '/admin' : '/client'); // Redirigir según el rol
         }
+        notifyListeners();
       }
-    } catch (error) {
-      print("Error en Google Sign-In: $error");
     }
+  } catch (error) {
+    print("Error en Google Sign-In: $error");
   }
+}
 
   Future<void> signUp({
     required BuildContext context,
@@ -149,23 +168,30 @@ class _LoginScreenState extends State<LoginScreen> {
   String _errorMessage = '';
 
   void _handleSignIn(AuthProvider authProvider) async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
+  final email = _emailController.text.trim();
+  final password = _passwordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty) {
-      setState(() {
-        _errorMessage = 'Por favor, complete todos los campos';
-      });
-      return;
-    }
+  if (email.isEmpty || password.isEmpty) {
+    setState(() {
+      _errorMessage = 'Por favor, complete todos los campos';
+    });
+    return;
+  }
 
+  try {
     final result = await authProvider.signIn(context, email, password);
     if (result != "Inicio de sesión exitoso") {
       setState(() {
         _errorMessage = result;
       });
     }
+  } catch (error) {
+    setState(() {
+      _errorMessage = 'Error desconocido, por favor intente más tarde.';
+    });
   }
+}
+
 
   void _showResetPasswordDialog(BuildContext context) {
     final TextEditingController _resetEmailController = TextEditingController();
