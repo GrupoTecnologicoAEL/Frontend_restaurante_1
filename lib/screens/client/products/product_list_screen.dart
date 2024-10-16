@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../models/product.dart';
 import '../../../services/API_service.dart';
+import '../../../services/Cart_service.dart'; // Importa el servicio del carrito
+import '../products/cart_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   @override
@@ -10,10 +13,13 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> with SingleTickerProviderStateMixin {
   late Future<List<Product>> futureProducts;
   final ApiService apiService = ApiService();
+  final ServiceCart serviceCart = ServiceCart(); // Instancia del servicio del carrito
   List<Product> _allProducts = [];
   List<Product> _filteredProducts = [];
   String _searchQuery = "";
   TabController? _tabController;
+  bool isLoading = false;
+  final FirebaseAuth _auth = FirebaseAuth.instance; // FirebaseAuth instance
 
   @override
   void initState() {
@@ -39,6 +45,42 @@ class _ProductListScreenState extends State<ProductListScreen> with SingleTicker
         }).toList();
       }
     });
+  }
+
+  // Función para agregar producto al carrito
+  Future<void> _addToCart(Product product) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // Obtén el userId desde Firebase Auth
+      final User? user = _auth.currentUser; // Obtener el usuario autenticado
+
+      if (user != null) {
+        String userId = user.uid; // El ID del usuario autenticado en Firebase
+
+        // Llamar al servicio del carrito para agregar el producto
+        await serviceCart.addToCart(userId, product.id, 1); // Agregar 1 unidad del producto
+
+        // Mostrar un mensaje de confirmación
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Producto agregado al carrito')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Debes iniciar sesión para agregar productos al carrito')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al agregar producto al carrito: $error')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -168,7 +210,7 @@ class _ProductListScreenState extends State<ProductListScreen> with SingleTicker
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: GestureDetector(
                             onTap: () {
-                              // Lógica para agregar al carrito
+                              _addToCart(product); 
                             },
                             child: AnimatedContainer(
                               duration: Duration(milliseconds: 200),

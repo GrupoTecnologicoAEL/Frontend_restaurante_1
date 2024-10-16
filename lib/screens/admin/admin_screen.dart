@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../admin/products/admin_product_screen.dart';
 import'../admin/categories/category_list_screen.dart';
+import '../Admin/orders/order_list_screen.dart';
 import '../admin/users/create_user.dart';
+import '../admin/notifications/notificaction-screen.dart';
 
 class AdminHomeScreen extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -83,6 +85,20 @@ class AdminHomeScreen extends StatelessWidget {
               ),
               _buildAdminModuleCard(
                 context,
+                title: 'Ver Pedidos',
+                icon: Icons.list_alt,
+                color: Color(0xFF4A4A4A), // Fondo elegante
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderListScreen(),
+                    ),
+                  );
+                },
+              ),
+              _buildAdminModuleCard(
+                context,
                 title: 'Usuarios',
                 icon: Icons.people_alt_outlined,
                 color: Color(0xFF4A4A4A), // Fondo elegante
@@ -91,6 +107,20 @@ class AdminHomeScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AdminCreateUserScreen(),
+                    ),
+                  ); 
+                },
+              ),
+                  _buildAdminModuleCard(
+                context,
+                title: 'Notificaciones',
+                icon: Icons.notifications_outlined,
+                color: Color(0xFF4A4A4A), // Fondo elegante
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UnderConstructionScreen(),
                     ),
                   ); 
                 },
@@ -111,15 +141,6 @@ class AdminHomeScreen extends StatelessWidget {
                 color: Color(0xFF4A4A4A), // Fondo elegante
                 onTap: () {
                   // Lógica para la pantalla de configuración
-                },
-              ),
-              _buildAdminModuleCard(
-                context,
-                title: 'Notificaciones',
-                icon: Icons.notifications_outlined,
-                color: Color(0xFF4A4A4A), // Fondo elegante
-                onTap: () {
-                  // Lógica para la pantalla de notificaciones
                 },
               ),
             ],
